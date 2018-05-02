@@ -1,11 +1,11 @@
 <template>
-  <div>
-    <div>
+  <div class="">
+    <div class="left">
       <el-menu
         router
         :default-active="activeRouter"
         class="el-menu-demo"
-        mode="horizontal"
+        mode="vertical"
         @select="handleSelect"
         background-color="#545c64"
         text-color="#fff"
@@ -14,11 +14,11 @@
         <el-menu-item index="/cc">兑换码管理</el-menu-item>
         <el-menu-item index="/admin">用户管理</el-menu-item>
         <el-menu-item index="/product">奖品管理</el-menu-item>
-        <el-button style="float: right;margin-top: 10px;margin-right: 40px" type="danger" @click="layout">退出登录</el-button>
+        <!-- <el-button style="float: right;margin-top: 10px;margin-right: 40px" type="danger" @click="layout">退出登录</el-button> -->
       </el-menu>
-      <div style="height: calc(100vh - 61px);overflow: scroll">
+      <!-- <div style="height: calc(100vh - 61px);overflow: scroll">
         <router-view/>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -53,4 +53,7 @@
 </script>
 
 <style lang="less">
+  .el-menu-demo{
+    width: 200px;
+  }
 </style>

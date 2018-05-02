@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '../main/Login.vue'
-import Menu from '../main/Menu.vue'
+import home from '../main/home.vue'
 import Admin from '../main/Admin.vue'
 import Order from '../main/Order.vue'
 
@@ -11,8 +11,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'menu',
-      component: Menu,
+      name: 'home',
+      component: home,
       children: [
         {
           path: '/',

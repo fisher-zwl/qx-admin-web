@@ -1,6 +1,6 @@
 <template>
   <div class="login-warp">
-    <div class="title-text"><span><b>奈儿后台管理系统</b></span></div>
+    <div class="title-text"><span><b>bocat后台管理系统</b></span></div>
     <div class="login-auto">
       <el-input placeholder="请输入用户名" v-model="username">
         <template slot="prepend">用户</template>
