@@ -1,6 +1,6 @@
 <template>
-  <div class="home-warp">
-    位置：首页
+  <div class="contact-us-warp">
+    位置：联系我们5255656
   </div>
 </template>
 <script>

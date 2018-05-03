@@ -1,6 +1,7 @@
 <template>
-  <div class="home-warp">
-    位置：首页
+  <div class="about-us-warp">
+    位置：数据中心666666
+    <router-view/>
   </div>
 </template>
 <script>

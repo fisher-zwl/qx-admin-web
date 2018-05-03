@@ -1,6 +1,6 @@
 <template>
-  <div class="home-warp">
-    位置：首页
+  <div class="message-board-warp">
+    位置：留言管理
   </div>
 </template>
 <script>

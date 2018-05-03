@@ -1,6 +1,6 @@
 <template>
-  <div class="home-warp">
-    位置：首页
+  <div class="products-warp">
+    位置：产品中心
   </div>
 </template>
 <script>

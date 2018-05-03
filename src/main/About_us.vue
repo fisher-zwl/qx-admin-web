@@ -1,6 +1,6 @@
 <template>
-  <div class="home-warp">
-    位置：首页
+  <div class="about-us-warp">
+    位置：关于我们65565
   </div>
 </template>
 <script>
