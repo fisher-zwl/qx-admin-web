@@ -1,6 +1,5 @@
 <template>
-  <div class="about-us-warp">
-    位置：数据中心666666
+  <div class="data-center-warp">
     <router-view/>
   </div>
 </template>
@@ -19,5 +18,9 @@
   }
 </script>
 <style scoped lang="less">
- 
+ .data-center-warp{
+   width: 100%;
+   height: 100%;
+   overflow: hidden;
+ }
 </style>

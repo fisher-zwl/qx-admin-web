@@ -1,6 +1,5 @@
 import axios from 'axios'
 axios.interceptors.request.use(function (config) { // 这里的config包含每次请求的内容
-  console.log(config)
   config.url = '/admin/v1' + config.url
   config.timeout = 1000 * 20
   return config

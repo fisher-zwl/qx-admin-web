@@ -17,7 +17,7 @@
 </template>
 <script>
   import axios from 'axios'
-
+  import storage from '../../config/storageConfig.js'
   export default{
     data(){
       return {
@@ -43,6 +43,7 @@
         };
         let result = await axios.post('/login', params)
         if (result.code == 0) {
+          storage.setItem('userName',result.data.username)
           window.location.href = '#/'
         } else {
           this.$message.error('账号名或密码错误！');

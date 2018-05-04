@@ -5,7 +5,7 @@
         <span class="nav-name">BOBOCAT流量号</span>
         <div class="userInfo">
           <img class="user-logo" src="/static/images/user_logo.png">
-          <span class="user-name">郑文龙</span>
+          <span class="user-name">{{username}}</span>
         </div>
         <button class="layout" @click="layout"><span>退出</span></button>
     </div>
@@ -72,12 +72,13 @@
 
 <script>
   import axios from 'axios'
-
+  import storage from '../../config/storageConfig.js'
   export default {
     data() {
       return {
         activeRouter: '/',
-        activeIndex2: '4'
+        activeIndex2: '4',
+        username: storage.getItem('userName')
       }
     },
     methods:{
