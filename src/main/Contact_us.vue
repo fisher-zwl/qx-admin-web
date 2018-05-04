@@ -7,7 +7,10 @@
       <span>联系我们</span>
     </div>
     <div class="cont">
-      <div class="cu-left">dsdsds</div>
+      <div class="cu-left">
+        <div class="l-top">联系我们</div>
+        <div class="l-cont">22222222</div>
+      </div>
       <div class="cu-right">dddddd</div>
     </div>
   </div>
@@ -51,13 +54,35 @@
     position: relative;
     .cu-left{
       position: absolute;
-      left: 0;
-      width:150px;
+      left: 20px;
+      width:200px;
+      top: 0;
+      bottom: 70px;
+      border-top: 1px solid #e9e9e9;
+      border-left: 1px solid #e9e9e9;
+      border-bottom: 1px solid #e9e9e9;
+      background-color: #ffffff;
+      .l-top{
+        height: 40px;
+        width: 100%;
+        vertical-align: middle;
+        line-height: 40px;
+        border-bottom: 2px solid #f2f2f2;
+        background-color: #f2f2f2;
+      }
+      .l-cont{
+        width: 100%;
+        margin-bottom: 60px;
+      }
     }
     .cu-right{
       position: absolute;
-      left: 150px;
-      right: 0;
+      left: 220px;
+      right: 20px;
+      top: 0px;
+      bottom: 70px;
+      border: 1px solid #e9e9e9;
+      background-color: #ffffff;
     }
   }
  }
