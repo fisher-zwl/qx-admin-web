@@ -156,6 +156,6 @@
 </script>
 
 <style lang="less" scope>
-  @import "../assets/admin.less";
+  // @import "../assets/admin.less";
 
 </style>

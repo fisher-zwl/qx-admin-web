@@ -1,0 +1,15 @@
+<template>
+  <div class="common-kk">
+    
+  </div>
+</template>
+</div>
+</template>
+<script>
+  export default{
+    
+  }
+</script>
+<style lang="less" scoped>
+  
+</style>

@@ -1,89 +1,96 @@
 <template>
   <div class="contact-us-warp">
     <div class="nav-url">
-      <span>位置：</span>
+      <!-- <span>位置：</span>
       <span>数据中心</span> 
       <span>></span>
-      <span>联系我们</span>
+      <span>联系我们</span> -->
     </div>
     <div class="cont">
       <div class="cu-left">
-        <div class="l-top">联系我们</div>
-        <div class="l-cont">22222222</div>
+        <div class="l-top"><span>联系我们</span><span class="fa fa-plus add"></span></div>
+        <ul class="l-cont">
+          <li v-for="item in contactUsData" :key="item.id">
+            <span v-on:click="onclick(item.id,'search')">{{item.title}}</span>
+            <span class="fa fa-pencil fa-fw edit" v-on:click="onclick(item.id,'edit')"></span>
+            <span class="fa fa-trash-o fa-fw delete"></span>
+          </li>
+        </ul>
       </div>
-      <div class="cu-right">dddddd</div>
+      <div class="cu-right">
+        <div class="r-nav-url">
+          <span style="margin-left:20px">位置：</span>
+          <span>数据中心</span> 
+          <span>></span>
+          <span>联系我们</span>
+          <span>></span>
+          <span>{{localTitle}}</span>
+        </div>
+        <div class="r-word" v-if="showContType == true">
+          {{showCont}}
+        </div>
+        <div class="r-word" v-if="!showContType">
+          kkkkkkkkkkkk
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script>
   import axios from 'axios'
-
+  import {Notification} from 'element-ui';
   export default{
     data(){
       return {
-        username: ''
+        username: '',
+        contactUsData:[],
+        showCont:'',
+        localTitle:'',
+        showContType:true
       }
     },
     methods: {
+      async getListData(){
+        let r = await axios.get('/contact-us', {})
+        if(r.code == 0){
+          this.contactUsData = r.data
+          this.showCont = r.data[0].content
+          this.localTitle = r.data[0].title
+        }else{
+          Notification.error({
+            title: '错误',
+            message: '获取《联系我们》菜单失败'
+          })
+        }
+      },
+      async onclick(id,type){
+        let url = '/contact-us/'+ id
+        let r = await axios.get(url)
+        if(r.code == 0){
+          this.localTitle = r.data.title
+          switch(type){
+            case 'search':
+              this.showContType = true
+              this.showCont = r.data.content
+              break
+            case 'edit':
+              this.showContType = false
+              break
+          }
+        }else{
+          Notification.error({
+            title: '错误',
+            message: '获取《联系我们》获取内容失败'
+          })
+        }
+      },
       
+    },
+    async mounted() {
+      this.getListData()
     }
   }
 </script>
 <style scoped lang="less">
- .contact-us-warp{
-  width: 100%;
-  height: 100%;
-  background-color: #f2f2f2;
-  .nav-url{
-    height: 30px;
-    width: 100%;
-    text-align: left;
-    padding-left: 15px;
-    background-color: #f2f2f2;
-    span{
-      display: inline-block;
-      vertical-align: middle;
-      line-height: 30px;
-      font: 400 14px/30px "微软雅黑";
-      color: #666;
-    }
-  }
-  .cont{
-    width: 100%;
-    height: calc(100vh - 30px);
-    position: relative;
-    .cu-left{
-      position: absolute;
-      left: 20px;
-      width:200px;
-      top: 0;
-      bottom: 70px;
-      border-top: 1px solid #e9e9e9;
-      border-left: 1px solid #e9e9e9;
-      border-bottom: 1px solid #e9e9e9;
-      background-color: #ffffff;
-      .l-top{
-        height: 40px;
-        width: 100%;
-        vertical-align: middle;
-        line-height: 40px;
-        border-bottom: 2px solid #f2f2f2;
-        background-color: #f2f2f2;
-      }
-      .l-cont{
-        width: 100%;
-        margin-bottom: 60px;
-      }
-    }
-    .cu-right{
-      position: absolute;
-      left: 220px;
-      right: 20px;
-      top: 0px;
-      bottom: 70px;
-      border: 1px solid #e9e9e9;
-      background-color: #ffffff;
-    }
-  }
- }
+ @import "../assets/contact_us.less";
 </style>
