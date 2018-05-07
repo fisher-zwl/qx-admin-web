@@ -11,7 +11,7 @@
         <div class="l-top"><span>联系我们</span><span class="fa fa-plus add"></span></div>
         <ul class="l-cont">
           <li v-for="item in contactUsData" :key="item.id">
-            <span v-on:click="onclick(item.id,'search')">{{item.title}}</span>
+            <span v-on:click="onclick(item.id,'search')" class="l-span" v-bind:title="item.title">{{item.title}}</span>
             <span class="fa fa-pencil fa-fw edit" v-on:click="onclick(item.id,'edit')"></span>
             <span class="fa fa-trash-o fa-fw delete"></span>
           </li>
@@ -30,7 +30,7 @@
           {{showCont}}
         </div>
         <div class="r-word" v-if="!showContType">
-          kkkkkkkkkkkk
+          <commonKK :kkData="editData"></commonKK>
         </div>
       </div>
     </div>
@@ -38,15 +38,20 @@
 </template>
 <script>
   import axios from 'axios'
-  import {Notification} from 'element-ui';
+  import {Notification} from 'element-ui'
+  import commonKK from '../components/common-kk.vue'
   export default{
+    components: {
+      commonKK
+    },
     data(){
       return {
         username: '',
         contactUsData:[],
         showCont:'',
         localTitle:'',
-        showContType:true
+        showContType:true,
+        editData:{}
       }
     },
     methods: {
@@ -75,6 +80,7 @@
               break
             case 'edit':
               this.showContType = false
+              this.editData = r.data
               break
           }
         }else{
