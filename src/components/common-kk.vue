@@ -4,7 +4,10 @@
       <span>标题：</span>
       <input type="text" v-bind:value="kkData.title" placeholder="请输入类别标题"/>
     </div>
-    <div class="kk-cont" id="kkEditor"></div>
+    <div class="kk-cont">
+      <div class="kk-toolbar" id="kkEditor_toolbar"></div>
+      <div class="kk-text" id="kkEditor_text"></div>
+    </div>
   </div>
 </template>
 <script>
@@ -13,12 +16,8 @@
   export default{
     props:['kkData'],
     mounted:function(){
-      let editor = new wangeditor('#kkEditor')
+      let editor = new wangeditor('#kkEditor_toolbar', '#kkEditor_text')
       editor.create()
-      $('#kkEditor .w-e-text-container').css('height',($('#kkEditor').height()-31)+'px')
-      $(window).resize(function(){//监测浏览器发生大小变化
-        $('#kkEditor .w-e-text-container').css('height',($('#kkEditor').height()-31)+'px')
-      });
     }
   }
 </script>
@@ -28,8 +27,10 @@
   height: 100%;
   position: relative;
   .kk-title{
-    width: 80%;
-    margin: 20px auto;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
     height: 40px;
     text-align: left;
     background-color: #EFEFEF;
@@ -41,6 +42,7 @@
       width: 400px;
       height: 40px;
       border: none;
+      vertical-align: top;
       border-width: 0px;
       background-color: #EFEFEF;
     }
@@ -50,10 +52,30 @@
   }
   .kk-cont{
     margin: 0 auto;
-    padding:0px 20px;
     position: absolute;
     top: 80px;
-    bottom: 0;
+    bottom: 110px;
+    left: 20px;
+    right: 20px;
+    .kk-toolbar{
+      margin: 0 auto;
+      height: 31px;
+      background-color: #f2f2f2;
+      border-bottom: 1px solid #ccc;
+      border-top: 1px solid #ccc;
+    }
+    .kk-text{
+      margin: 0 auto;
+      height: 100%;
+      padding-top: 32px;
+      margin-top: -32px;
+      border-left: 1px solid #ccc;
+      border-right: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
+      .w-e-text{
+        overflow-y: auto;
+      }
+    }
   }
 }
 </style>

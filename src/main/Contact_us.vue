@@ -12,8 +12,10 @@
         <ul class="l-cont">
           <li v-for="item in contactUsData" :key="item.id">
             <span v-on:click="onclick(item.id,'search')" class="l-span" v-bind:title="item.title">{{item.title}}</span>
-            <span class="fa fa-pencil fa-fw edit" v-on:click="onclick(item.id,'edit')"></span>
-            <span class="fa fa-trash-o fa-fw delete"></span>
+            <span v-show="item.show" class="fa fa-eye fa-fw show" :class="'show_'+item.id" title="前台隐藏" v-on:click="onclick(item.id,'show')"></span>
+            <span v-show="!item.show" class="fa fa-eye-slash fa-fw  hide" :class="'hide_'+item.id" title="前台显示" v-on:click="onclick(item.id,'hide')"></span>
+            <span class="fa fa-pencil fa-fw edit" title="编辑" v-on:click="onclick(item.id,'edit')"></span>
+            <span class="fa fa-trash-o fa-fw delete" title="删除" v-on:click="onclick(item.id,'delete')"></span>
           </li>
         </ul>
       </div>
@@ -25,6 +27,11 @@
           <span>联系我们</span>
           <span>></span>
           <span>{{localTitle}}</span>
+          <div class="r-nav-btn">
+            <a>保存</a>
+            <a>返回</a>
+            <a>阅览</a>
+          </div>
         </div>
         <div class="r-word" v-if="showContType == true">
           {{showCont}}
@@ -38,7 +45,8 @@
 </template>
 <script>
   import axios from 'axios'
-  import {Notification} from 'element-ui'
+  import $ from 'jquery'
+  import {Notification,MessageBox} from 'element-ui'
   import commonKK from '../components/common-kk.vue'
   export default{
     components: {
@@ -51,7 +59,7 @@
         showCont:'',
         localTitle:'',
         showContType:true,
-        editData:{}
+        editData:{},
       }
     },
     methods: {
@@ -69,28 +77,40 @@
         }
       },
       async onclick(id,type){
-        let url = '/contact-us/'+ id
-        let r = await axios.get(url)
-        if(r.code == 0){
-          this.localTitle = r.data.title
-          switch(type){
-            case 'search':
-              this.showContType = true
-              this.showCont = r.data.content
-              break
-            case 'edit':
-              this.showContType = false
-              this.editData = r.data
-              break
-          }
-        }else{
-          Notification.error({
-            title: '错误',
-            message: '获取《联系我们》获取内容失败'
-          })
+        switch(type){
+          case 'search':
+            var url = '/contact-us/'+ id
+            var r = await axios.get(url)
+            this.localTitle = r.data.title
+            this.showContType = true
+            this.showCont = r.data.content
+            break
+          case 'edit':
+            var url = '/contact-us/'+ id
+            var r = await axios.get(url)
+            this.localTitle = r.data.title
+            this.showContType = false
+            this.editData = r.data
+            break
+          case 'delete':
+            
+            break
+          case 'show':
+            var r = await axios.post('/contact-us/update',{id:id,show:false})
+            if(r && r.code == 0){
+              $('.show_'+id).css('display','none')
+              $('.hide_'+id).css('display','inline-block')
+            }
+            break
+          case 'hide':
+            var r = await axios.post('/contact-us/update',{id:id,show:true})
+            if(r && r.code == 0){
+              $('.hide_'+id).css('display','none')
+              $('.show_'+id).css('display','inline-block')
+            }
+            break
         }
-      },
-      
+      }
     },
     async mounted() {
       this.getListData()

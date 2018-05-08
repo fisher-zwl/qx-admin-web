@@ -208,9 +208,10 @@
         position: absolute;
         left: 202px;
         right: 0;
-        min-width: 800px;
+        min-width: 1120px;
         top: 60px;
         bottom: 0;
+        overflow-x: auto;
       }
     }
   }
