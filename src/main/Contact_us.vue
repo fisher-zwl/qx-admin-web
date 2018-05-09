@@ -8,14 +8,14 @@
     </div>
     <div class="cont">
       <div class="cu-left">
-        <div class="l-top"><span>联系我们</span><span class="fa fa-plus add"></span></div>
+        <div class="l-top"><span>联系我们</span><span class="fa fa-plus add" title="新增"  v-on:click="onclick('add')"></span></div>
         <ul class="l-cont">
           <li v-for="item in contactUsData" :key="item.id">
-            <span v-on:click="onclick(item.id,'search')" class="l-span" v-bind:title="item.title">{{item.title}}</span>
-            <span v-show="item.show" class="fa fa-eye fa-fw show" :class="'show_'+item.id" title="前台隐藏" v-on:click="onclick(item.id,'show')"></span>
-            <span v-show="!item.show" class="fa fa-eye-slash fa-fw  hide" :class="'hide_'+item.id" title="前台显示" v-on:click="onclick(item.id,'hide')"></span>
-            <span class="fa fa-pencil fa-fw edit" title="编辑" v-on:click="onclick(item.id,'edit')"></span>
-            <span class="fa fa-trash-o fa-fw delete" title="删除" v-on:click="onclick(item.id,'delete')"></span>
+            <span v-on:click="onclick('search',item.id)" class="l-span" v-bind:title="item.title">{{item.title}}</span>
+            <span v-show="item.show" class="fa fa-eye fa-fw show" :class="'show_'+item.id" title="前台隐藏" v-on:click="onclick('show', item.id)"></span>
+            <span v-show="!item.show" class="fa fa-eye-slash fa-fw  hide" :class="'hide_'+item.id" title="前台显示" v-on:click="onclick('hide', item.id)"></span>
+            <span class="fa fa-pencil fa-fw edit" title="编辑" v-on:click="onclick('edit', item.id)"></span>
+            <span class="fa fa-trash-o fa-fw delete" title="删除" v-on:click="onclick('delete', item.id)"></span>
           </li>
         </ul>
       </div>
@@ -27,9 +27,9 @@
           <span>联系我们</span>
           <span>></span>
           <span>{{localTitle}}</span>
-          <div class="r-nav-btn">
-            <a>保存</a>
-            <a>返回</a>
+          <div class="r-nav-btn"  v-if="!showContType">
+            <a v-on:click="onclick('save')">保存</a>
+            <a v-on:click="onclick('back')">返回</a>
             <a>阅览</a>
           </div>
         </div>
@@ -37,7 +37,7 @@
           {{showCont}}
         </div>
         <div class="r-word" v-if="!showContType">
-          <commonKK :kkData="editData"></commonKK>
+          <commonKK :kkData="editData" ref="commonKK" @kkTitle="getTitle" @getKKData="getData" @getKKBack="getBack"></commonKK>
         </div>
       </div>
     </div>
@@ -60,6 +60,7 @@
         localTitle:'',
         showContType:true,
         editData:{},
+        save:false
       }
     },
     methods: {
@@ -72,11 +73,12 @@
         }else{
           Notification.error({
             title: '错误',
-            message: '获取《联系我们》菜单失败'
+            message: '获取《联系我们》菜单失败',
+            type:'error'
           })
         }
       },
-      async onclick(id,type){
+      async onclick(type,id){
         switch(type){
           case 'search':
             var url = '/contact-us/'+ id
@@ -95,6 +97,18 @@
           case 'delete':
             
             break
+          case 'save':
+            this.$refs.commonKK.save()
+            // var r = await axios.post('/contact-us/update',{id:3,title:'保帅',content:'4554544445444'})
+            break
+          case 'back':
+            this.$refs.commonKK.back()
+            break
+          case 'add':
+            this.showContType = false
+            this.editData = ''
+            this.localTitle = '新增板块'
+            break
           case 'show':
             var r = await axios.post('/contact-us/update',{id:id,show:false})
             if(r && r.code == 0){
@@ -110,6 +124,48 @@
             }
             break
         }
+      },
+      getTitle(val){//获取组件common-kk标题值
+        //console.log(val);
+      },
+      async getData(val){//获取组件common-kk返回值
+        if(val.id){//id存在编辑更新
+          let r = await axios.post('/contact-us/update',{id:val.id,title:val.title,content:val.content})
+          if(r && r.code == 0){
+            Notification.success({
+              title: '成功',
+              message: '保存成功',
+              type:'success'
+            })
+          }else{
+            Notification.error({
+              title: '错误',
+              message: '保存失败',
+              type:'error'
+            })
+          }
+        }else{//id不存在添加该数据
+          let r = await axios.post('/contact-us/create',{title:val.title,content:val.content})
+          if(r && r.code == 0){
+            Notification.success({
+              title: '成功',
+              message: '保存成功',
+              type:'success'
+            })
+          }else{
+            Notification.error({
+              title: '错误',
+              message: '保存失败',
+              type:'error'
+            })
+          }
+        }
+      },
+      getBack(val){
+        this.localTitle = val.title
+        this.showContType = true
+        this.showCont = val.content
+        console.log('返回值')
       }
     },
     async mounted() {
