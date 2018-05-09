@@ -66,11 +66,7 @@ export default {
         this.dialogVisible = true
         return
       }
-      let params = {
-        title: _this.title,
-        content: _this.editor.txt.text()
-      };
-      this.$emit("getKKBack", params)
+      this.$emit("getKKBack", true)
     },
     cancelSave(){
       this.dialogVisible = false

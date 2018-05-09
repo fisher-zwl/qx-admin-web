@@ -60,7 +60,8 @@
         localTitle:'',
         showContType:true,
         editData:{},
-        save:false
+        save:false,
+        currentId:0,
       }
     },
     methods: {
@@ -70,6 +71,7 @@
           this.contactUsData = r.data
           this.showCont = r.data[0].content
           this.localTitle = r.data[0].title
+          this.currentId = r.data[0].id
         }else{
           Notification.error({
             title: '错误',
@@ -81,7 +83,16 @@
       async onclick(type,id){
         switch(type){
           case 'search':
+            if(this.$refs.commonKK && !this.$refs.commonKK.saveChange){//是否正在编辑框出现改动没保存的情况
+              Notification.error({
+                title: '错误',
+                message: '请保存当前页面的改变',
+                type:'error'
+              })
+              return
+            } 
             var url = '/contact-us/'+ id
+            this.currentId = id
             var r = await axios.get(url)
             this.localTitle = r.data.title
             this.showContType = true
@@ -137,6 +148,10 @@
               message: '保存成功',
               type:'success'
             })
+            await this.getListData()
+            this.showCont = val.content
+            this.localTitle = val.title
+            this.currentId = val.id
           }else{
             Notification.error({
               title: '错误',
@@ -152,6 +167,10 @@
               message: '保存成功',
               type:'success'
             })
+            await this.getListData()
+            this.showCont = r.data.content
+            this.localTitle = r.data.title
+            this.currentId = r.data.id
           }else{
             Notification.error({
               title: '错误',
@@ -162,10 +181,9 @@
         }
       },
       getBack(val){
-        this.localTitle = val.title
-        this.showContType = true
-        this.showCont = val.content
-        console.log('返回值')
+        if(val){
+          this.showContType = true
+        }
       }
     },
     async mounted() {
