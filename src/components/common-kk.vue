@@ -59,8 +59,8 @@ export default {
       this.$emit("getKKData", params)
     },
     back() {
-      console.log(this.saveChange)
-      console.log("编辑框发生改变")
+      // console.log(this.saveChange)
+      // console.log("编辑框发生改变")
       let _this = this
       if (!_this.saveChange) {
         this.dialogVisible = true
@@ -83,11 +83,11 @@ export default {
       this.editor.txt.clear();
       this.editor.txt.html(this.content);
       this.saveChange = true;
-      console.log("第二次content发生变化");
+      // console.log("第二次content发生变化");
     }
   },
   mounted: function() {
-    console.log("第一次content发生变化");
+    // console.log("第一次content发生变化");
     this.saveChange = true;
     if (this.kkData) {
       this.title = this.kkData.title;
@@ -98,7 +98,7 @@ export default {
     this.editor.customConfig.onchange = function() {
       //编辑框发生改变
       _this.saveChange = false
-      console.log("编辑框发生改变")
+      // console.log("编辑框发生改变")
     }
     this.editor.create();
     this.editor.txt.clear();

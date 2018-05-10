@@ -106,7 +106,21 @@
             this.editData = r.data
             break
           case 'delete':
-            
+            var r = await axios.post('/contact-us/delete',{id:id})
+            if(r && r.code == 0){
+              Notification.success({
+                title: '成功',
+                message: '删除成功',
+                type:'success'
+              })
+              this.getListData()
+            }else{
+              Notification.error({
+                title: '错误',
+                message: '删除失败',
+                type:'error'
+              })
+            }
             break
           case 'save':
             this.$refs.commonKK.save()
