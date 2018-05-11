@@ -12,8 +12,8 @@
         <ul class="l-cont">
           <li v-for="item in aboutUsData" :key="item.id">
             <span v-on:click="onclick('search',item.id)" class="l-span" v-bind:title="item.title">{{item.title}}</span>
-            <span v-show="item.show" class="fa fa-eye fa-fw show" :class="'show_'+item.id" title="前台隐藏" v-on:click="onclick('show', item.id)"></span>
-            <span v-show="!item.show" class="fa fa-eye-slash fa-fw  hide" :class="'hide_'+item.id" title="前台显示" v-on:click="onclick('hide', item.id)"></span>
+            <span v-show="item.show" class="fa fa-eye fa-fw show" :class="'show_'+item.id" title="不发布" v-on:click="onclick('show', item.id)"></span>
+            <span v-show="!item.show" class="fa fa-eye-slash fa-fw  hide" :class="'hide_'+item.id" title="发布" v-on:click="onclick('hide', item.id)"></span>
             <span class="fa fa-pencil fa-fw edit" title="编辑" v-on:click="onclick('edit', item.id)"></span>
             <span class="fa fa-trash-o fa-fw delete" title="删除" v-on:click="onclick('delete', item.id)"></span>
           </li>

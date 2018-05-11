@@ -19,6 +19,7 @@ import Message_board from '../main/Message_board.vue'
 Vue.use(Router)
 
 export default new Router({
+  // mode: 'history',
   routes: [
     {
       path: '/',
