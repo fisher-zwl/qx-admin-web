@@ -7,16 +7,16 @@
             <el-select clearable  v-model="projects.type" @clear="clear('type')" placeholder="全部种类">
               <el-option  
                 v-for="item in options"
-                :key="item.id"
-                :label="item.label"
-                :value="item.id">
+                :key="item.projectsBlockId"
+                :label="item.name"
+                :value="item.projectsBlockId">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="发布状态">
             <el-select clearable  v-model="projects.status" @clear="clear('status')" placeholder="所有状态">
               <el-option label="已经发布" value="1"></el-option>
-              <el-option label="暂未发布" value="-1"></el-option>
+              <el-option label="暂未发布" value="2"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -26,10 +26,10 @@
       </div>
       <div class="nav-menu">
         <el-row>
-          <el-button type="primary" size="small">添加种类</el-button>
-          <el-button type="primary" size="small">删除种类</el-button>
-          <el-button type="primary" size="small">添加案例</el-button>
-          <el-button type="primary" size="small">批量删除</el-button>
+          <el-button type="primary" size="small" @click="menuClick('addType')">添加种类</el-button>
+          <el-button type="primary" size="small" @click="menuClick('deleteType')">删除种类</el-button>
+          <el-button type="primary" size="small" @click="menuClick('addExp')">添加案例</el-button>
+          <el-button type="primary" size="small" @click="menuClick('batchDelete')">批量删除</el-button>
           <el-button type="primary" size="small">危险按钮</el-button>
         </el-row>
       </div>
@@ -39,14 +39,20 @@
             :data="tableData"
             border
             height="100%"
-            style="width: 100%;height:100%">
+            style="width: 100%;background-color:#F7F7F7">
             <el-table-column
               type="selection"
               align="center"
               width="55">
             </el-table-column>
             <el-table-column
-              prop="date"
+              type="index"
+              label="序号"
+              align="center"
+              width="80">
+            </el-table-column>
+            <el-table-column
+              prop="projects_block.name"
               label="案例种类"
               align="center"
               width="180">
@@ -54,7 +60,7 @@
             <el-table-column
               label="案例操作"
               align="center"
-              width="250">
+              width="260">
               <template slot-scope="scope">
                 <el-button
                   size="mini"
@@ -71,19 +77,31 @@
               </template>
             </el-table-column>
             <el-table-column
-              prop="date"
               label="发布状态"
               align="center"
               width="180">
+              <template slot-scope="scope">
+                <span :style="(scope.row.status == 1) ? '':'color:red'">{{(scope.row.status == 1) ? '已发布':'未发布'}}</span>
+              </template>
             </el-table-column>
             <el-table-column
-              prop="date"
               label="发布时间"
               align="center"
-              width="180">
+              width="200">
+              <template slot-scope="scope">
+                <span style="">{{momentTime(scope.row.pubTime) }}</span>
+              </template>
             </el-table-column>
             <el-table-column
-              prop="address"
+              label="创建时间"
+              align="center"
+              width="200">
+              <template slot-scope="scope">
+                <span style="">{{momentTime(scope.row.createdAt) }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="title"
               align="center"
               label="案例标题">
             </el-table-column>
@@ -102,10 +120,59 @@
         </el-pagination>
       </div>
     </div>
+    <el-dialog
+      title="添加案例种类"
+      :visible.sync="dialog_addType"
+      width="20%"
+      center>
+      <el-form :model="formType" class="demo-ruleForm" :rules="rules" ref="ruleForm" >
+        <el-form-item label="种类名称" prop="name" label-width="100px">
+          <el-input v-model="formType.name" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="案例描述:" label-width="100px">
+          <el-input v-model="formType.description" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="onClick('addType-cancel')">取 消</el-button>
+        <el-button type="primary" @click="onClick('addType-save')">确 定</el-button>
+      </span>
+    </el-dialog>
+    <div class="deleteType-dialog">
+      <el-dialog
+        title="删除案例种类"
+        :visible.sync="dialog_deleteType"
+        width="20%"
+        center>
+        <template>
+          <el-checkbox :indeterminate="isIndeterminate" v-model="checkAllBlocks" @change="handleCheckAllBlock">全选</el-checkbox>
+          <div style="margin: 15px 0;"></div>
+          <el-checkbox-group v-model="checkedBlocks" @change="handleCheckedBlock">
+            <el-checkbox v-for="item in options" :label="item.projectsBlockId" :key="item.projectsBlockId">{{item.name}}</el-checkbox>
+          </el-checkbox-group>
+        </template>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="onClick('deleteType-cancel')">取 消</el-button>
+          <el-button type="primary" @click="onClick('deleteType-save')">确 定</el-button>
+        </span>
+      </el-dialog>
+    </div>
+    <el-dialog
+      title="添加案例"
+      :visible.sync="dialog_addExp"
+      width="20%"
+      center>
+      
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="onClick('addExp-cancel')">取 消</el-button>
+        <el-button type="primary" @click="onClick('addExp-save')">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
   import axios from 'axios'
+  import moment from 'moment'
   import {Notification,MessageBox} from 'element-ui'
   export default{
     data(){
@@ -117,23 +184,24 @@
         },
         options:[],
         currentPage4: 4,
-        tableData: [{
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }]
+        tableData: [],
+        dialog_addType:false,
+        dialog_deleteType: false,
+        dialog_addExp:false,
+        formType:{
+          name:'',
+          description:''
+        },
+        formLabelWidth: '90px',
+        checkAllBlocks:false,//删除种类--全选
+        checkedBlocks:[],//删除种类--选中
+        isIndeterminate: false,//删除种类--状态
+        blocks:[],
+        rules:{
+          name: [
+            { required: true, message: '请输入活动名称', trigger: 'blur' }
+          ]
+        }
       }
     },
     methods: {
@@ -146,15 +214,118 @@
             break
         }
       },
-      onSearch(){
-
+      async getType(){
+        let r = await axios.get('/projects-block')
+        if(r && r.code == 0){
+          this.options = r.data
+        }
+      },
+      async onSearch(){
+        let _this = this
+        let params = {
+          projectsBlockId:_this.projects.type,
+          status:_this.projects.status
+        }
+        let r = await axios.post('/projects-single/search',{projectsBlockId:params.projectsBlockId,status:params.status})
+        if(r && r.code == 0){
+          _this.tableData = r.data
+        }else{
+          Notification.error({
+            title: '错误',
+            message: '查询失败',
+            type:'error'
+          })
+        }
+      },
+      momentTime(time){
+        console.log(time);
+        return moment(new Date(time)).format('YYYY-MM-DD HH:mm:ss')
       },
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
       },
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
+      },
+      menuClick(type){
+        switch(type){
+          case 'addType'://添加种类
+            this.dialog_addType = true
+            break
+          case 'deleteType'://删除种类
+            this.dialog_deleteType = true
+            break
+          case 'addExp'://添加案例
+            this.dialog_addExp = true
+            break
+          case 'batchDelete'://批量删除
+            break
+        }
+      },
+      async onClick(type){
+        switch(type){
+          case 'addType-cancel'://添加种类--弹窗取消
+            this.dialog_addType = false
+            break
+          case 'addType-save'://添加种类--弹窗保存
+            let _this = this;
+            _this.$refs['ruleForm'].validate(async (valid) => {
+              if (valid) {
+                 let r = await axios.post('/projects-block/create',{name:_this.formType.name,description:_this.formType.description})
+                if(r && r.code == 0){
+                  Notification.success({
+                    title: '成功',
+                    message: '添加案例种类成功',
+                    type:'success'
+                  })
+                  this.getType()
+                }
+                _this.dialog_addType = false
+              } else {
+                return false;
+              }
+            });
+            break
+          case 'deleteType-cancel'://删除种类--弹窗取消
+            this.dialog_deleteType = false
+            break
+          case 'deleteType-save'://删除种类--弹窗保存
+            
+            break
+          case 'addExp'://添加案例
+            break
+          case 'batchDelete'://批量删除
+            break
+        }
+      },
+      handleCheckAllBlock(val){//
+        if(val){
+          let arr = []
+          this.options.forEach(item =>{
+            arr.push(item.projectsBlockId)
+          })
+          this.checkedBlocks = arr
+        }else{
+          this.checkedBlocks = []
+        }
+        this.isIndeterminate = false
+      },
+      handleCheckedBlock(val){
+        let checkedCount = val.length;
+        this.checkAllBlocks = checkedCount === this.options.length;
+        this.isIndeterminate = checkedCount > 0 && checkedCount < this.options.length;
       }
+    },
+    // watch:{
+    //   options:{
+    //     handler:function(val,oldval){  
+    //       this.blocks = val.map(item =>Object.assign({id: item.projectsBlockId, name: item.name}))
+    //     },
+    //     deep:true//对象内部的属性监听，也叫深度监听
+    //   }
+    // },
+    async mounted() {
+      this.getType()
     }
   }
 </script>
@@ -168,6 +339,17 @@
     }
     .nav-footer .el-pagination button,.nav-footer  .el-pagination span,.nav-footer .el-pager li{
       font-size: 14px;
+    }
+    .nav-footer .el-pagination .el-select .el-input{
+      width: 110px !important;
+    }
+    .deleteType-dialog{
+      .el-checkbox{
+        width: 100%;
+      }
+      .el-checkbox+.el-checkbox{
+        margin-left: 0px;
+      }
     }
   }
 </style>
