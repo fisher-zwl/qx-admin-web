@@ -73,7 +73,7 @@
                 <el-button
                   size="mini"
                   type="success"
-                  @click="handleDelete(scope.$index, scope.row)">发布</el-button>
+                  @click="handlePublic(scope.$index, scope.row)">发布</el-button>
               </template>
             </el-table-column>
             <el-table-column
@@ -221,6 +221,7 @@
         options:[],
         expType:'',//案例tan窗种类选中值
         expTitle:'',//案例tan窗案例标题
+        expContent:'',//案例tan窗案例编辑框内容
         currentPage4: 4,
         tableData: [],
         dialog_addType:false,
@@ -285,6 +286,15 @@
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
       },
+      handleEdit(index, row) {//表格编辑
+        console.log(index, row)
+      },
+      handleDelete(index, row) {//表格删除
+        console.log(index, row)
+      },
+      handlePublic(index, row){
+        console.log(index, row)
+      },
       menuClick(type){
         switch(type){
           case 'addType'://添加种类
@@ -342,8 +352,6 @@
               this.dialog_deleteType = false
             }
             break
-          case 'addExp'://添加案例
-            break
           case 'batchDelete'://批量删除
             break
         }
@@ -366,10 +374,11 @@
         this.isIndeterminate = checkedCount > 0 && checkedCount < this.options.length
       },
       getEditorData(val){//编辑框返回值
-        console.log(val)
+        this.expContent = val
       },
       async expSubmit(){
-        if(this.expType){
+        let _this = this
+        if(!_this.expType){
           Notification.error({
             title: '错误',
             message: '案例种类不能为空',
@@ -377,10 +386,35 @@
           })
           return
         }
-        if(this.expTitle){
+        if(!_this.expTitle){
           Notification.error({
             title: '错误',
             message: '案例标题不能为空',
+            type:'error'
+          })
+          return
+        }
+        let params = {
+          id: _this.expType,
+          title: _this.expTitle,
+          content: _this.expContent
+        }
+        let  r = await axios.post('/projects-single/create',
+          {projectsBlockId:params.id,title:params.title,content:params.content})
+        if(r && r.code == 0){
+          Notification.success({
+            title: '成功',
+            message: '创建案例信息成功',
+            type:'success'
+          })
+          this.dialog_addExp = false
+          _this.expType = ''
+          _this.expTitle = ''
+          _this.expContent = ''
+        }else{
+          Notification.error({
+            title: '失败',
+            message: '创建案例信息失败',
             type:'error'
           })
           return
