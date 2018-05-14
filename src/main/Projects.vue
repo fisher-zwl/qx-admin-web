@@ -157,24 +157,60 @@
         </span>
       </el-dialog>
     </div>
-    <el-dialog
-      title="添加案例"
-      :visible.sync="dialog_addExp"
-      width="20%"
-      center>
-      
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="onClick('addExp-cancel')">取 消</el-button>
-        <el-button type="primary" @click="onClick('addExp-save')">确 定</el-button>
-      </span>
-    </el-dialog>
+    <div class="addExp-dialog">
+      <template>
+        <el-dialog
+          title="添加案例"
+          :visible.sync="dialog_addExp"
+          width="60%"
+          fullscreen
+          center>
+          <div class="addExp-body">
+            <div class="type">
+              <div class="type-name">
+                <span>案例种类：</span>
+                <el-select v-model="expType" placeholder="请选择">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.projectsBlockId"
+                    :label="item.name"
+                    :value="item.projectsBlockId">
+                  </el-option>
+                </el-select>
+              </div>
+              <el-button type="primary" @click="expSubmit">提交案例</el-button>
+            </div>
+            <div class="exp-name">
+              <span>案例标题：</span>
+              <el-input v-model="expTitle" placeholder="请输入案例标题"></el-input>
+            </div>
+            <commonEditor @getEditorData="getEditorData"></commonEditor>
+            <!-- <template>
+              <div class="editor-cont">
+                <div class="editor-toolbar" id="p_editor_toolbar"></div>
+                <div class="editor-text" id="p_editor_text"></div>
+              </div>
+            </template> -->
+          </div>
+          <!-- <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="onClick('addExp-cancel')">取 消</el-button>
+            <el-button type="primary" @click="onClick('addExp-save')">确 定</el-button>
+          </span> -->
+        </el-dialog>
+      </template>
+    </div>
   </div>
 </template>
 <script>
   import axios from 'axios'
   import moment from 'moment'
+  import wangeditor from "wangeditor"
+    import commonEditor from '../components/common-editor.vue'
   import {Notification,MessageBox} from 'element-ui'
   export default{
+    components: {
+      commonEditor
+    },
     data(){
       return {
         username: '',
@@ -183,6 +219,8 @@
           status:''
         },
         options:[],
+        expType:'',//案例tan窗种类选中值
+        expTitle:'',//案例tan窗案例标题
         currentPage4: 4,
         tableData: [],
         dialog_addType:false,
@@ -281,6 +319,8 @@
                   this.getType()
                 }
                 _this.dialog_addType = false
+                _this.formType.name = ''
+                _this.formType.description = ''
               } else {
                 return false;
               }
@@ -288,9 +328,19 @@
             break
           case 'deleteType-cancel'://删除种类--弹窗取消
             this.dialog_deleteType = false
+            this.checkedBlocks = []
             break
-          case 'deleteType-save'://删除种类--弹窗保存
-            
+          case 'deleteType-save'://删除种类--弹窗保存/projects-block/
+            let  r = await axios.post('/projects-block/delete',{id:this.checkedBlocks})
+            if(r && r.code == 0){
+              Notification.success({
+                title: '成功',
+                message: '删除'+r.data+'案例种类成功',
+                type:'success'
+              })
+              this.getType()
+              this.dialog_deleteType = false
+            }
             break
           case 'addExp'://添加案例
             break
@@ -311,9 +361,30 @@
         this.isIndeterminate = false
       },
       handleCheckedBlock(val){
-        let checkedCount = val.length;
-        this.checkAllBlocks = checkedCount === this.options.length;
-        this.isIndeterminate = checkedCount > 0 && checkedCount < this.options.length;
+        let checkedCount = val.length
+        this.checkAllBlocks = checkedCount === this.options.length
+        this.isIndeterminate = checkedCount > 0 && checkedCount < this.options.length
+      },
+      getEditorData(val){//编辑框返回值
+        console.log(val)
+      },
+      async expSubmit(){
+        if(this.expType){
+          Notification.error({
+            title: '错误',
+            message: '案例种类不能为空',
+            type:'error'
+          })
+          return
+        }
+        if(this.expTitle){
+          Notification.error({
+            title: '错误',
+            message: '案例标题不能为空',
+            type:'error'
+          })
+          return
+        }
       }
     },
     // watch:{
@@ -324,7 +395,7 @@
     //     deep:true//对象内部的属性监听，也叫深度监听
     //   }
     // },
-    async mounted() {
+    mounted() {
       this.getType()
     }
   }
@@ -350,6 +421,22 @@
       .el-checkbox+.el-checkbox{
         margin-left: 0px;
       }
+    }
+    .addExp-dialog .el-dialog__wrapper{
+      top: 10px;
+      bottom: 10px;
+      .addExp-body{
+        top: 54px;
+        bottom: 10px;
+        left: 25px;
+        right: 25px;
+      }
+      .el-dialog--center .el-dialog__body{
+        height: calc(~"100% - 110px");
+      }
+    }
+    .el-table  .el-checkbox__input.is-disabled .el-checkbox__inner{
+      background-color: #fff;
     }
   }
 </style>
