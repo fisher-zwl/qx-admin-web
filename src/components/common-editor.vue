@@ -9,32 +9,33 @@ import wangeditor from "wangeditor";
 import { Notification, MessageBox } from "element-ui";
 import $ from "jquery";
 export default {
-  props: ["kkData"],
+  props: ["editorContent"],
   data() {
     return {
       editor: {},
-      content: ""
+      content:''
     };
   },
   methods: {
    
   },
   watch: {
-
+    editorContent: function(value) {
+      this.content = this.editorContent
+      this.editor.txt.clear();
+      this.editor.txt.html(this.content);
+    }
   },
   mounted: function() {
     let _this = this
     _this.editor = new wangeditor("#p_editor_toolbar", "#p_editor_text");
     _this.editor.customConfig.onchange = function() {
-      //编辑框发生改变
-      // _this.saveChange = false
-      // console.log("编辑框发生改变")
        _this.content = _this.editor.txt.text()
-      _this.$emit("getEditorData", _this.content);
+      _this.$emit("getEditorData", _this.content)
     }
-    this.editor.create();
-    // this.editor.txt.clear();
-    // this.editor.txt.html(this.content);
+    this.editor.create()
+    this.editor.txt.clear()
+    this.editor.txt.html(this.editorContent)
   }
 };
 </script>

@@ -30,7 +30,7 @@
           <el-button type="primary" size="small" @click="menuClick('deleteType')">删除种类</el-button>
           <el-button type="primary" size="small" @click="menuClick('addExp')">添加案例</el-button>
           <el-button type="primary" size="small" @click="menuClick('batchDelete')">批量删除</el-button>
-          <el-button type="primary" size="small">危险按钮</el-button>
+          <!-- <el-button type="primary" size="small">危险按钮</el-button> -->
         </el-row>
       </div>
       <div class="nav-tab">
@@ -39,6 +39,7 @@
             :data="tableData"
             border
             height="100%"
+            @selection-change="handleSelectionChange"
             style="width: 100%;background-color:#F7F7F7">
             <el-table-column
               type="selection"
@@ -47,6 +48,7 @@
             </el-table-column>
             <el-table-column
               type="index"
+              :index="indexMethod"
               label="序号"
               align="center"
               width="80">
@@ -60,7 +62,7 @@
             <el-table-column
               label="案例操作"
               align="center"
-              width="260">
+              width="180">
               <template slot-scope="scope">
                 <el-button
                   size="mini"
@@ -70,10 +72,10 @@
                   size="mini"
                   type="danger"
                   @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                <el-button
+                <!-- <el-button
                   size="mini"
                   type="success"
-                  @click="handlePublic(scope.$index, scope.row)">发布</el-button>
+                  @click="handlePublic(scope.$index, scope.row)">发布</el-button> -->
               </template>
             </el-table-column>
             <el-table-column
@@ -112,11 +114,11 @@
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="currentPage4"
-          :page-sizes="[100, 200, 300, 400]"
-          :page-size="100"
+          :current-page="currentPage"
+          :page-sizes="[10, 15, 20, 25,30]"
+          :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="400">
+          :total="tableTotal">
         </el-pagination>
       </div>
     </div>
@@ -160,16 +162,18 @@
     <div class="addExp-dialog">
       <template>
         <el-dialog
-          title="添加案例"
           :visible.sync="dialog_addExp"
           width="60%"
+          :before-close="handleClose"
+          @close="handleExpDialogClose"
           fullscreen
           center>
+          <span slot="title" class="dialog-title">{{expDialogTitle}} </span>
           <div class="addExp-body">
             <div class="type">
               <div class="type-name">
                 <span>案例种类：</span>
-                <el-select v-model="expType" placeholder="请选择">
+                <el-select v-model="expType" @change="handleExpTypeChanged" placeholder="请选择">
                   <el-option
                     v-for="item in options"
                     :key="item.projectsBlockId"
@@ -178,27 +182,24 @@
                   </el-option>
                 </el-select>
               </div>
+              <div class="pub-exp">
+                <template>
+                  <el-radio v-model="pubExpRadio" label="1">发布</el-radio>
+                  <el-radio v-model="pubExpRadio" label="2">不发布</el-radio>
+                </template>
+              </div>
               <el-button type="primary" @click="expSubmit">提交案例</el-button>
             </div>
             <div class="exp-name">
               <span>案例标题：</span>
-              <el-input v-model="expTitle" placeholder="请输入案例标题"></el-input>
+              <el-input v-model="expTitle" @change="handleExpTitleChanged" placeholder="请输入案例标题"></el-input>
             </div>
-            <commonEditor @getEditorData="getEditorData"></commonEditor>
-            <!-- <template>
-              <div class="editor-cont">
-                <div class="editor-toolbar" id="p_editor_toolbar"></div>
-                <div class="editor-text" id="p_editor_text"></div>
-              </div>
-            </template> -->
+            <commonEditor :editorContent="expContent" @getEditorData="getEditorData"></commonEditor>
           </div>
-          <!-- <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="onClick('addExp-cancel')">取 消</el-button>
-            <el-button type="primary" @click="onClick('addExp-save')">确 定</el-button>
-          </span> -->
         </el-dialog>
       </template>
     </div>
+    <!-- <div class="pubExp-dialog"></div> -->
   </div>
 </template>
 <script>
@@ -219,11 +220,18 @@
           status:''
         },
         options:[],
+        expDialogTitle:'添加案例',//案例dialog的标题名次
+        expId:'',//案例编辑对应ID
         expType:'',//案例tan窗种类选中值
         expTitle:'',//案例tan窗案例标题
         expContent:'',//案例tan窗案例编辑框内容
-        currentPage4: 4,
+        ExpDialogChange:false,//添加、编辑案例dialog发生改变
+        pubExpRadio: '1',//案例是否发布：1代表发布；2代表暂不发布
+        currentPage: 1,
         tableData: [],
+        tableTotal: 0,//表格查询出来总数
+        pageSize: 10,//表格每页10条
+        multipleSelection:[],//表格选中值
         dialog_addType:false,
         dialog_deleteType: false,
         dialog_addExp:false,
@@ -261,13 +269,19 @@
       },
       async onSearch(){
         let _this = this
+        let currentPage = parseInt(_this.currentPage) || 1 
+        let currentSize = parseInt(_this.pageSize) || 10
         let params = {
           projectsBlockId:_this.projects.type,
-          status:_this.projects.status
+          status:_this.projects.status,
+          page:currentPage,
+          size:currentSize
         }
-        let r = await axios.post('/projects-single/search',{projectsBlockId:params.projectsBlockId,status:params.status})
+        let r = await axios.post('/projects-single/search',
+          {projectsBlockId:params.projectsBlockId,status:params.status,page:params.page,size:params.size})
         if(r && r.code == 0){
-          _this.tableData = r.data
+          _this.tableData = r.data.rows
+          _this.tableTotal = r.data.count
         }else{
           Notification.error({
             title: '错误',
@@ -277,23 +291,71 @@
         }
       },
       momentTime(time){
-        console.log(time);
-        return moment(new Date(time)).format('YYYY-MM-DD HH:mm:ss')
+        if(time){
+          return moment(new Date(time)).format('YYYY-MM-DD HH:mm:ss')
+        }else{
+          return '-'
+        }
+        
       },
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
+        // console.log(`每页 ${val} 条`);
+        this.pageSize = val
+        this.onSearch()
       },
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
+        // console.log(`当前页: ${val}`);
+        this.currentPage = val
+        this.onSearch()
       },
-      handleEdit(index, row) {//表格编辑
-        console.log(index, row)
+      handleEdit(index, row) {//表格中内容编辑
+        // console.log(index, row)
+        this.expDialogTitle = '编辑案例'
+        this.pubExpRadio = row.status.toString()
+        this.expId = row.projectsSingleId
+        this.expType = row.projectsBlockId
+        this.expTitle = row.title
+        this.expContent = row.content
+        this.dialog_addExp = true
       },
-      handleDelete(index, row) {//表格删除
-        console.log(index, row)
+      handleDelete(index, row) {//表格中内容删除
+        let _this = this
+        this.$confirm('确认删除该条案例信息？')
+          .then(async _ => {
+            let r = await axios.post('/projects-single/delete',{id:row.projectsSingleId})
+            if(r && r.code == 0){
+              _this.onSearch()
+            }
+          })
+          .catch(_ => {});
       },
-      handlePublic(index, row){
-        console.log(index, row)
+      handlePublic(index, row){//表格中信息发布
+        let _this = this
+        
+      },
+      handleClose(done){//添加、编辑案例的谈窗关闭按钮X
+        if(this.ExpDialogChange){
+          this.$confirm('页面内容已发送改变未保存，确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
+        }else{
+          done()
+        }
+      },
+      handleExpTypeChanged(expType){//添加、编辑案例的种类选中值发生改变
+        this.ExpDialogChange = true
+        // console.log(expType)
+      },
+      handleExpTitleChanged(expTitle){//添加、编辑案例标题值发生改变
+        this.ExpDialogChange = true
+        // console.log(expTitle)
+      },
+      handleExpDialogClose(){//案例dialog关闭的回调
+      },
+      handleSelectionChange(val){//表格选中的值返回
+        this.multipleSelection = val
       },
       menuClick(type){
         switch(type){
@@ -304,9 +366,28 @@
             this.dialog_deleteType = true
             break
           case 'addExp'://添加案例
+            this.expDialogTitle = '添加案例'
+            this.pubExpRadio = '1'
+            this.expId = ''
+            this.expType = ''
+            this.expTitle = ''
+            this.expContent = ''
             this.dialog_addExp = true
             break
           case 'batchDelete'://批量删除
+            let _this = this
+            let deleteData = []
+            _this.multipleSelection.forEach(item =>{
+              deleteData.push(item.projectsSingleId)
+            })
+            this.$confirm('确认删除该条案例信息？')
+              .then(async _ => {
+                let r = await axios.post('/projects-single/delete',{id:deleteData})
+                if(r && r.code == 0){
+                  _this.onSearch()
+                }
+              })
+              .catch(_ => {});
             break
         }
       },
@@ -350,9 +431,8 @@
               })
               this.getType()
               this.dialog_deleteType = false
+              this.onSearch()
             }
-            break
-          case 'batchDelete'://批量删除
             break
         }
       },
@@ -373,10 +453,15 @@
         this.checkAllBlocks = checkedCount === this.options.length
         this.isIndeterminate = checkedCount > 0 && checkedCount < this.options.length
       },
+      indexMethod(index){
+        return (this.currentPage-1)*this.pageSize+index+1
+      },
       getEditorData(val){//编辑框返回值
         this.expContent = val
+        this.ExpDialogChange = true
+        // console.log(val)
       },
-      async expSubmit(){
+      async expSubmit(){//案例提交
         let _this = this
         if(!_this.expType){
           Notification.error({
@@ -395,26 +480,29 @@
           return
         }
         let params = {
-          id: _this.expType,
+          id:_this.expId,
+          blockId: _this.expType,
           title: _this.expTitle,
-          content: _this.expContent
+          content: _this.expContent,
+          status: parseInt(_this.pubExpRadio)
         }
         let  r = await axios.post('/projects-single/create',
-          {projectsBlockId:params.id,title:params.title,content:params.content})
+          { id:params.id,projectsBlockId:params.blockId,title:params.title,content:params.content,status:params.status})
         if(r && r.code == 0){
+          let nfTitle = this.expId ? '编辑案例信息成功':'创建案例信息成功'
           Notification.success({
             title: '成功',
-            message: '创建案例信息成功',
+            message: nfTitle,
             type:'success'
           })
+          this.onSearch()
+          this.ExpDialogChange = false
           this.dialog_addExp = false
-          _this.expType = ''
-          _this.expTitle = ''
-          _this.expContent = ''
         }else{
+          let nfTitle = this.expId ? '编辑案例信息失败':'创建案例信息失败'
           Notification.error({
             title: '失败',
-            message: '创建案例信息失败',
+            message: nfTitle,
             type:'error'
           })
           return
@@ -431,6 +519,7 @@
     // },
     mounted() {
       this.getType()
+      this.onSearch()
     }
   }
 </script>
@@ -464,6 +553,9 @@
         bottom: 10px;
         left: 25px;
         right: 25px;
+        .pub-exp .el-radio+.el-radio {
+            margin-left: 15px;
+        }
       }
       .el-dialog--center .el-dialog__body{
         height: calc(~"100% - 110px");
