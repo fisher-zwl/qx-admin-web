@@ -125,7 +125,7 @@
     <el-dialog
       title="添加案例种类"
       :visible.sync="dialog_addType"
-      width="20%"
+      width="30%"
       center>
       <el-form :model="formType" class="demo-ruleForm" :rules="rules" ref="ruleForm" >
         <el-form-item label="种类名称" prop="name" label-width="100px">

@@ -14,6 +14,7 @@ import News from '../main/News.vue'
 import Station from '../main/Station.vue'
 import Station_admin from '../main/Station_admin.vue'
 import Station_copyright from '../main/Station_copyright.vue'
+import Station_banner from '../main/Station_banner.vue'
 import Message_board from '../main/Message_board.vue'
 
 Vue.use(Router)
@@ -74,6 +75,10 @@ export default new Router({
               path: '/station-copyright',
               name: '版权信息管理',
               component: Station_copyright
+            },{
+              path: '/station-banner',
+              name: '轮播图片管理',
+              component: Station_banner
             }
           ]
         }

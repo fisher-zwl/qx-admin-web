@@ -49,6 +49,7 @@
               <el-menu-item-group>
                 <el-menu-item index="/station-admin">管理员</el-menu-item>
                 <el-menu-item index="/station-copyright">版权信息</el-menu-item>
+                <el-menu-item index="/station-banner">轮播图片</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <!-- <el-menu-item index="4">
