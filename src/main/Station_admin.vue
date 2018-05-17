@@ -97,7 +97,7 @@
               <el-input v-model="formType.username" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="密码：" label-width="85px">
-              <el-input v-model="formType.password" type="password" placeholder="密码默认是111111" auto-complete="off"></el-input>
+              <el-input v-model="formType.password" type="password" @change="handlePswChange" placeholder="密码默认是111111" auto-complete="off"></el-input>
             </el-form-item>
             <el-form-item label="姓名：" prop="name" label-width="85px">
               <el-input v-model="formType.name" auto-complete="off"></el-input>
@@ -132,6 +132,7 @@ export default {
       dialog_user:false,
       dialogTitle:'添加管理用户',
       editUserId:'',
+      editPswChange:false,//编辑用户的密码是否发生改变。默认false不改变
       formType:{
         name:'',
         username:'',
@@ -176,6 +177,12 @@ export default {
         phone:'',
       }
       this.editUserId = ''
+      this.editPswChange = false
+    },
+    handlePswChange(){//编辑时密码发生变动
+      if(this.editUserId){
+        this.editPswChange = true
+      }
     },
     indexMethod(index){
       return (this.page-1)*this.size+index+1
@@ -201,6 +208,7 @@ export default {
                   name:_this.formType.name,
                   username:_this.formType.username,
                   password:_this.formType.password || '111111',
+                  isPsw:_this.editPswChange,
                   phone:_this.formType.phone,
                 }
                 if(_this.editUserId){
@@ -208,15 +216,21 @@ export default {
                   console.log(_this.editUserId)
                 }
                 let r = await axios.post('/adminOption',
-                    {name:params.name,username:params.username,password:params.password,phone:params.phone,id:params.editUserId})
+                    {name:params.name,username:params.username,password:params.password,phone:params.phone,id:params.editUserId,isPsw:params.isPsw})
                 if(r && r.code == 0){
                   Notification.success({
                     title: '成功',
-                    message: '添加成功',
+                    message: _this.dialogTitle+'成功',
                     type:'success'
                   })
                   this.onSearch()
                   this.dialog_user = false
+                }else{
+                  Notification.error({
+                    title: '成功',
+                    message:r.msg,
+                    type:'error'
+                  })
                 }
               } else {
                 return false;
@@ -260,7 +274,29 @@ export default {
           this.dialog_user = true
           break
         case 'delete':
-
+          let deleteData = []
+            _this.multipleSelection.forEach(item =>{
+              deleteData.push(item.id)
+            })
+          this.$confirm(`确认删除选中${deleteData.length}个用户？`)
+            .then(async _ => {
+              let r = await axios.post('/adminOption/deletedb',{id:deleteData})
+              if(r && r.code == 0){
+                Notification.success({
+                  title: '成功',
+                  message: '删除用户成功',
+                  type:'success'
+                })
+                _this.onSearch()
+              }else{
+                Notification.error({
+                  title: '失败',
+                  message: '删除失败',
+                  type:'error'
+                })
+              }
+            })
+            .catch(_ => {});
           break
       }
     }

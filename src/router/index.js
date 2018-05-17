@@ -12,6 +12,7 @@ import Products from '../main/Products.vue'
 import Projects from '../main/Projects.vue'
 import News from '../main/News.vue'
 import Station from '../main/Station.vue'
+import Station_psw from '../main/Station_psw.vue'
 import Station_admin from '../main/Station_admin.vue'
 import Station_copyright from '../main/Station_copyright.vue'
 import Station_banner from '../main/Station_banner.vue'
@@ -68,6 +69,10 @@ export default new Router({
           component: Station,
           children: [
             {
+              path: '/station-psw',
+              name: '修改密码',
+              component: Station_psw
+            },{
               path: '/station-admin',
               name: '管理员管理',
               component: Station_admin

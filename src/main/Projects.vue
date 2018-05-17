@@ -380,7 +380,7 @@
             _this.multipleSelection.forEach(item =>{
               deleteData.push(item.projectsSingleId)
             })
-            this.$confirm('确认删除该条案例信息？')
+            this.$confirm(`确认删除选中${deleteData.length}条案例信息？`)
               .then(async _ => {
                 let r = await axios.post('/projects-single/delete',{id:deleteData})
                 if(r && r.code == 0){
