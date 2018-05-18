@@ -14,7 +14,7 @@ module.exports = {
       '/admin/v1':{
         changeOrigin:true,
         target: 'http://localhost:7800'
-      }
+      },
     },
 
     // Various Dev Server settings
