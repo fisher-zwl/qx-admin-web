@@ -206,7 +206,7 @@
   import axios from 'axios'
   import moment from 'moment'
   import wangeditor from "wangeditor"
-    import commonEditor from '../components/common-editor.vue'
+  import commonEditor from '../components/common-editor.vue'
   import {Notification,MessageBox} from 'element-ui'
   export default{
     components: {
