@@ -96,8 +96,7 @@
         </el-table-column>
         <el-table-column
           label="留言时间"
-          align="center"
-          width="200">
+          align="center">
           <template slot-scope="scope">
             <span style="">{{momentTime(scope.row.createdAt) }}</span>
           </template>
