@@ -29,8 +29,9 @@ export default {
   mounted: function() {
     let _this = this
     _this.editor = new wangeditor("#p_editor_toolbar", "#p_editor_text");
+    _this.editor.customConfig.uploadImgServer = '/main'
     _this.editor.customConfig.onchange = function() {
-       _this.content = _this.editor.txt.text()
+       _this.content = _this.editor.txt.html()
       _this.$emit("getEditorData", _this.content)
     }
     this.editor.create()
@@ -45,14 +46,12 @@ export default {
       margin: 0 auto;
       height: 31px;
       background-color: #f2f2f2;
-      border-bottom: 1px solid #ccc;
-      border-top: 1px solid #ccc;
+      border: 1px solid #ccc;
+      // border-top: 1px solid #ccc;
     }
     .editor-text{
       margin: 0 auto;
       height: calc(~"100% - 33px");
-      padding-top: 32px;
-      margin-top: -32px;
       border-left: 1px solid #ccc;
       border-right: 1px solid #ccc;
       border-bottom: 1px solid #ccc;

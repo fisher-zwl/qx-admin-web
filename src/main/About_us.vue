@@ -33,9 +33,7 @@
             <a>阅览</a>
           </div>
         </div>
-        <div class="r-word" v-if="showContType == true">
-          {{showCont}}
-        </div>
+        <div class="r-word" v-if="showContType == true" v-html="showCont"></div>
         <div class="r-word" v-if="!showContType">
           <commonKK :kkData="editData" ref="commonKK" @kkTitle="getTitle" @getKKData="getData" @getKKBack="getBack"></commonKK>
         </div>

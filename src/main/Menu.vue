@@ -14,7 +14,7 @@
 				<el-menu
 						router
 						:default-active="activeRouter"
-						class="left"
+						class="menu-left"
 						mode="vertical"
 						@select="handleSelect"
 						background-color="#172850"
@@ -65,7 +65,7 @@
 					<router-view/>
 			</div> -->
 			<!-- </div> -->
-			<div class="right">
+			<div class="menu-right">
         <router-view/>
       </div>
     </div>
@@ -158,7 +158,7 @@
     }
     .content{
       width: 100%;
-      .left{
+      .menu-left{
         width: 200px;
         position: absolute;
         top: 60px;
@@ -206,7 +206,7 @@
           }
         }
       }
-      .right{
+      .menu-right{
         position: absolute;
         left: 202px;
         right: 0;

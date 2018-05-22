@@ -44,7 +44,7 @@ export default {
       let _this = this;
       let params = {
         title: _this.title,
-        content: _this.editor.txt.text()
+        content: _this.editor.txt.html()
       };
       if (this.kkData.id) params.id = this.kkData.id
       if (!params.title) {
@@ -95,6 +95,9 @@ export default {
     }
     this.editor = new wangeditor("#kkEditor_toolbar", "#kkEditor_text");
     let _this = this
+    _this.editor.customConfig.uploadImgServer = '/admin/v1/about-us/upload'
+    _this.editor.customConfig.uploadFileName = 'file'
+    // _this.editor.customConfig.debug = true
     this.editor.customConfig.onchange = function() {
       //编辑框发生改变
       _this.saveChange = false
@@ -147,14 +150,13 @@ export default {
       margin: 0 auto;
       height: 31px;
       background-color: #f2f2f2;
-      border-bottom: 1px solid #ccc;
-      border-top: 1px solid #ccc;
+      border: 1px solid #ccc;
+      // border-top: 1px solid #ccc;
     }
     .kk-text {
       margin: 0 auto;
-      height: 100%;
-      padding-top: 32px;
-      margin-top: -32px;
+      // height: 100%;
+      height: calc(~"100% - 33px");
       border-left: 1px solid #ccc;
       border-right: 1px solid #ccc;
       border-bottom: 1px solid #ccc;
