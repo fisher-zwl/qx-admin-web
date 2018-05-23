@@ -194,7 +194,7 @@
               <span>新闻标题：</span>
               <el-input v-model="expTitle" @change="handleExpTitleChanged" placeholder="请输入新闻标题"></el-input>
             </div>
-            <commonEditor :editorContent="expContent" @getEditorData="getEditorData"></commonEditor>
+            <commonEditor :editorContent="expContent" :editorTarget="news_target" @getEditorData="getEditorData"></commonEditor>
           </div>
         </el-dialog>
       </template>
@@ -248,7 +248,8 @@
           name: [
             { required: true, message: '请输入活动名称', trigger: 'blur' }
           ]
-        }
+        },
+        news_target:'news'
       }
     },
     methods: {

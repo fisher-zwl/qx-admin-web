@@ -25,7 +25,7 @@ import wangeditor from "wangeditor";
 import { Notification, MessageBox } from "element-ui";
 import $ from "jquery";
 export default {
-  props: ["kkData"],
+  props: ["kkData","target"],
   data() {
     return {
       title: "",
@@ -93,9 +93,13 @@ export default {
       this.title = this.kkData.title;
       this.content = this.kkData.content;
     }
+    let target = ''
+    if(this.target) target = this.target
+    // console.log(this.target)
+    // console.log(target)
     this.editor = new wangeditor("#kkEditor_toolbar", "#kkEditor_text");
     let _this = this
-    _this.editor.customConfig.uploadImgServer = '/admin/v1/about-us/upload'
+    _this.editor.customConfig.uploadImgServer = '/admin/v1/'+target+'/upload'
     _this.editor.customConfig.uploadFileName = 'file'
     // _this.editor.customConfig.debug = true
     this.editor.customConfig.onchange = function() {

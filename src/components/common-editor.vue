@@ -9,7 +9,7 @@ import wangeditor from "wangeditor";
 import { Notification, MessageBox } from "element-ui";
 import $ from "jquery";
 export default {
-  props: ["editorContent"],
+  props: ["editorContent","editorTarget"],
   data() {
     return {
       editor: {},
@@ -28,8 +28,11 @@ export default {
   },
   mounted: function() {
     let _this = this
+    let target = ''
+    if(_this.editorTarget) target = _this.editorTarget
     _this.editor = new wangeditor("#p_editor_toolbar", "#p_editor_text");
-    _this.editor.customConfig.uploadImgServer = '/main'
+    _this.editor.customConfig.uploadImgServer = '/admin/v1/'+target+'/upload'
+    _this.editor.customConfig.uploadFileName = 'file'
     _this.editor.customConfig.onchange = function() {
        _this.content = _this.editor.txt.html()
       _this.$emit("getEditorData", _this.content)

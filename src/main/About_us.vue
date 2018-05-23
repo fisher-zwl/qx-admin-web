@@ -35,7 +35,7 @@
         </div>
         <div class="r-word" v-if="showContType == true" v-html="showCont"></div>
         <div class="r-word" v-if="!showContType">
-          <commonKK :kkData="editData" ref="commonKK" @kkTitle="getTitle" @getKKData="getData" @getKKBack="getBack"></commonKK>
+          <commonKK :kkData="editData" :target="about_target" ref="commonKK" @kkTitle="getTitle" @getKKData="getData" @getKKBack="getBack"></commonKK>
         </div>
       </div>
     </div>
@@ -60,6 +60,7 @@
         editData:{},
         save:false,
         currentId:0,
+        about_target:'about-us'
       }
     },
     methods: {
