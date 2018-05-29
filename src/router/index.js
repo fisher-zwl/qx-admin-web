@@ -17,6 +17,7 @@ import Station_admin from '../main/Station_admin.vue'
 import Station_copyright from '../main/Station_copyright.vue'
 import Station_banner from '../main/Station_banner.vue'
 import Message_board from '../main/Message_board.vue'
+import Station_abbreviations from '../main/Station_abbreviations.vue'
 
 Vue.use(Router)
 
@@ -84,6 +85,10 @@ export default new Router({
               path: '/station-banner',
               name: '轮播图片管理',
               component: Station_banner
+            },{
+              path: '/station-abbreviations',
+              name: '缩略图片管理',
+              component: Station_abbreviations
             }
           ]
         }

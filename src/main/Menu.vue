@@ -51,6 +51,7 @@
                 <el-menu-item index="/station-psw">修改密码</el-menu-item>
                 <el-menu-item index="/station-copyright">版权信息</el-menu-item>
                 <el-menu-item index="/station-banner">轮播图片</el-menu-item>
+                <el-menu-item index="/station-abbreviations">缩略图管理</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <!-- <el-menu-item index="4">
